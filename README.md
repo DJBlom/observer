@@ -9,10 +9,10 @@ send the frames over a TCP/IP network to a host machine where the frames will be
 
 ### Technologies Used
 **Software**
-> Language:      C
-> API's:              POSIX and SOCKET
-> RTOS:            Ubuntu Linux with PREEMPT_RT patch
+> Language:      C,
+> API's:         POSIX and SOCKET,
+> RTOS:          Ubuntu Linux with PREEMPT_RT patch
 
 **Hardware**
->  Camera:        LogiTech 270HD 
+>  Camera:       LogiTech 270HD, 
 >  Dev Board:    Raspberry PI 3b+
