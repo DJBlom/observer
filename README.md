@@ -3,9 +3,9 @@ Observer is a personal project I started in order to improve my understanding of
 Additionally, the focus of observer is mainly related to computer vision and video frame capturing.
 
 ### Vision
-Currently, my vision for observer is the ability to capture video frames on a remote system based on a schedule, 
-send the frames over a TCP/IP network to a host machine where the frames will be stored in a RAID
-5 disk setup in order to provide robust fault tolerance. 
+Currently, my vision for observer is the ability to capture video frames on a remote system, 
+send the frames over a TCP/IP network to a host machine, where the frames will be stored in a RAID
+5 disk setup. As a reuslt, it should provide robust fault tolerance. 
 
 ### Technologies Used
 **Software**
