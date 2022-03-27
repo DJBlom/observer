@@ -1,6 +1,6 @@
 ### Observer
 Observer is a personal project I started in order to improve my understanding of hard real-time embedded systems. 
-Additionally, the focus of observer is mainly related to computer vision and video frame capturing.
+Additionally, the focus of observer is mainly related to computer vision and TCP/IP networking sockets.
 
 ### Vision
 Currently, my vision for observer is: the ability to capture video frames on a remote system, 
