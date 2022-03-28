@@ -22,12 +22,12 @@
 # Project Paths.
 SRC_DIR := src
 OBJ_DIR := build
-BIN_DIR := release
+BIN_DIR := debug
 
 
 
 # Final executable.
-EXE := $(BIN_DIR)/release
+EXE := $(BIN_DIR)/debug
 SRC := $(wildcard $(SRC_DIR)/*.c)
 OBJ := $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC)) 
 
@@ -36,7 +36,7 @@ OBJ := $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
 # Compilation Instructions.
 CC 		:= gcc -std=c1x
 CPPFLAGS 	:= -Iheader -MMD -MP
-CFLAGS 		:= -O3 -Wall -Werror 
+CFLAGS 		:= -g -O0 -Wall -Werror 
 LDLIBS 		:= -lpthread -lrt
 
 
