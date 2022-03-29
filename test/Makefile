@@ -1,31 +1,69 @@
-###########################################################
-# Contents: Makefile for all the tests of observer.
+########################################################
+# Contents: 	Build system of observer.
 #
-# Author: Dawid Blom.
+# Author: 	Dawid Blom.
 #
-# Date: 28/03/2022.
-###########################################################
+# Date: 	27/03/2022.
+#
+#
+#
+# NOTE: This Makefile is specific to the observer unit
+# 	testing process.
+########################################################
 
-# Cross Compiler.
+
+
+
+# Project Paths.
+SRC_DIR := src_test
+OBJ_DIR := build_test
+BIN_DIR := tests
+
+
+
+# Final executable.
+EXE := $(BIN_DIR)/test
+SRC := $(wildcard $(SRC_DIR)/*.c)
+OBJ := $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC)) 
+
+
+
+# Compilation Instructions.
 CC 		:= g++
+CPPFLAGS 	+= -I$(CPPUTEST_HOME)/include/CppUTest/MemoryLeakDetectorNewMacros.h
+CFLAGS 		:= -I$(CPPUTEST_HOME)/include/CppUTest/MemoryLeakDetectorMallocMacros.hg -g -O0 -Wall -Werror 
+LD_LIBRARIES 	:= -L$(CPPUTEST_HOME)/lib -lCppUTest -lCppUTestExt
+LDLIBS 		:= -lpthread -lrt
 
 
 
-# Paths.
-MAKEFILE_DIR	:= $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
-PROJECT_DIR	:= $(realpath $(MAKEFILE_DIR)..)
-TEST_DIR	:= $(PROJECT_DIR)/test
-CPPUTEST_HOME	:= /usr/include/cpputest
-SRC_DIRS	:= $(PROJECT_DIR)
-INCLUDE_DIRS	:= $(PROJECT_DIR)
-TEST_SRC_DIRS	:= $(TEST_DIR)
-
-# Add this to avoid problems when including cpputest headers on test files
-INCLUDE_DIRS	+= $(CPPUTEST_HOME)/include
 
 
-# What to call the test binary
-TEST_TARGET 	:= tests
+.PHONY: all clean
+
+# Target.
+all: $(EXE)
+	./$(EXE) -c
 
 
-include $(CPPUTEST_HOME)/build/MakefileWorker.mk
+
+
+# Linking Phase.
+$(EXE): $(OBJ) | $(BIN_DIR)
+	$(CC) $^ $(LDLIBS) -o $@ $(LD_LIBRARIES)
+
+# Compiling phase.
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+
+# Creating the directories required for comilation.
+$(BIN_DIR) $(OBJ_DIR):
+	mkdir -p $@
+
+# Cleaning up the project directory.
+clean:
+	rm -rf $(BIN_DIR)
+	rm -rf $(OBJ_DIR)
+
+# Automatic dependency generation for the header files.
+-include $(OBJ:.o=.d)
