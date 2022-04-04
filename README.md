@@ -14,7 +14,7 @@ for additional fault tolerance
 
 > API's:         POSIX, SOCKET, V4L2-video_driver
 
-> RTOS:          Ubuntu Linux with PREEMPT_RT patch
+> RTOS:          Ubuntu Linux with PREEMPT_RT-Patch
 
 **Hardware**
 
