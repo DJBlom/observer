@@ -12,7 +12,7 @@ for additional fault tolerance
 
 > Language:      C
 
-> API's:         POSIX and SOCKET
+> API's:         POSIX, SOCKET, V4L2-video_driver
 
 > RTOS:          Ubuntu Linux with PREEMPT_RT patch
 
