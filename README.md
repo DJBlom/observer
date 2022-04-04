@@ -21,3 +21,7 @@ for additional fault tolerance
 >  Camera:       LogiTech 270HD
  
 >  Dev Board:    Raspberry PI 3b+
+
+>  Router:       Normal Home Router
+
+>  Main Machine: Any desktop or laptop.
