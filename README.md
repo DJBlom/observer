@@ -12,12 +12,16 @@ for additional fault tolerance
 
 > Language:      C
 
-> API's:         POSIX and SOCKET
+> API's:         POSIX, SOCKET, V4L2-video_driver
 
-> RTOS:          Ubuntu Linux with PREEMPT_RT patch
+> RTOS:          Ubuntu Linux with PREEMPT_RT-Patch
 
 **Hardware**
 
 >  Camera:       LogiTech 270HD
  
 >  Dev Board:    Raspberry PI 3b+
+
+>  Router:       Normal Home Router
+
+>  Main Machine: Any desktop or laptop.
