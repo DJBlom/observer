@@ -17,11 +17,20 @@
 
 TEST_GROUP(First)
 {
+	void setup()
+	{
+	}
+
+
+
+	void teardown()
+	{
+	}
 };
 
 
 
-TEST(First, fail_me)
+TEST(First, fit)
 {
-	FAIL("First test failed.");
+	CHECK(1 % 100 == 0);
 }
