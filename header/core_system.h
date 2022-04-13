@@ -10,11 +10,18 @@
  * 	 properly determine the outcome.
  *************************************************************************/
 
+
+
+
+
+
 #ifndef _CORE_SYSTEM_H
 #define _CORE_SYSTEM_H
 
 #include <sched.h>
+
 #include <unistd.h>
+
 #include <time.h>
 
 
@@ -143,7 +150,12 @@ bool system_setup()
 double system_real_time()
 {
 	struct timespec time;
-	clock_gettime(CLOCK_MONOTONIC_RAW, &time);
+	int rc = clock_gettime(CLOCK_MONOTONIC_RAW, &time);
+	if (rc != 0)
+	{
+		perror("Failed to get system_time: ");
+		exit(1);
+	}
 
 	return (((double)(time.tv_sec) + (double)(time.tv_nsec)) / 1000000000.0);
 }
