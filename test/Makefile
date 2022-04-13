@@ -17,7 +17,7 @@
 # Project Paths.
 SRC_DIR := src_test
 OBJ_DIR := build_test
-BIN_DIR := tests
+BIN_DIR := test
 
 
 
@@ -43,7 +43,7 @@ LDLIBS 		:= -lpthread -lrt
 
 # Target.
 all: $(EXE)
-	./$(EXE) -c
+	sudo ./$(EXE) -c
 
 
 

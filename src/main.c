@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "../header/amp_system.h"
+#include "../header/core_system.h"
 
 
 
@@ -7,7 +7,13 @@
 
 int main(int argc, char **argv)
 {
-	amp_sched_policy();
+	system_setup();
+
+	double time = system_real_time();
+
+	print_system_policy();
+
+	printf("Time: %f\n", time);
 
 
 	return 0;
