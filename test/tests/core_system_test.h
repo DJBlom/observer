@@ -17,7 +17,7 @@
 
 
 
-struct system_members
+struct core_members
 {
 	int 			policy;
 
@@ -26,7 +26,7 @@ struct system_members
 	pid_t 			pid;
 };
 
-struct system_members member;
+struct core_members core_member;
 
 bool system_init(int policy, int priority, pid_t pid);
 
@@ -46,9 +46,9 @@ double system_real_time();
 bool system_init(int policy, int priority, pid_t pid)
 {
 	{
-		member.policy 				= policy;
-		member.priority.sched_priority		= priority;
-		member.pid				= pid;
+		core_member.policy 				= policy;
+		core_member.priority.sched_priority		= priority;
+		core_member.pid				= pid;
 
 		return true;
 	}
@@ -72,7 +72,7 @@ bool system_init(int policy, int priority, pid_t pid)
  **/
 bool system_setup()
 {
-	int rc = sched_setscheduler(member.pid, member.policy, &member.priority);
+	int rc = sched_setscheduler(core_member.pid, core_member.policy, &core_member.priority);
 	if (rc != 0)
 	{
 		perror("Usage: sudo ./[name of executable binary]");
@@ -80,7 +80,7 @@ bool system_setup()
 	}
 
 	
-	int policy = sched_getscheduler(member.pid);
+	int policy = sched_getscheduler(core_member.pid);
 	switch (policy)
 	{
 		case SCHED_FIFO:

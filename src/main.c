@@ -26,6 +26,8 @@
 
 #include "../header/core_system.h"
 
+#include "../header/amp_system.h"
+
 
 
 
@@ -62,19 +64,48 @@ int main(int argc, char **argv)
 	pid_t main_pid = getpid();
 	if (!system_init(POLICY, priority, main_pid))
 	{
-		perror("Failed to initialize system: ");
+		perror("core system initialization");
 		exit(1);
 	}
 
 
 	if (!system_setup())
 	{
-		perror("Failed to set scheduler: ");
+		perror("set scheduler");
 		exit(1);
 	}
 
-	printf("SYSTEM FINISHED: %6.2f\n", start_system_time);
-	syslog(LOG_CRIT, "Finished Time %6.2fsec", start_system_time);
+
+	if (!amp_system_init(POLICY, priority))
+	{
+		perror("amp system initilization");
+		exit(1);
+	}
+
+
+	if (!amp_thread_setup())
+	{
+		perror("amp thread setup");
+		exit(1);
+	}
+
+
+	if (!amp_thread_create())
+	{
+		perror("amp thread creation");
+		exit(1);
+	}
+
+
+	if (!amp_thread_join())
+	{
+		perror("amp thread joining");
+		exit(1);
+	}
+
+
+	printf("system finished in: %6.2fsec\n", start_system_time);
+	syslog(LOG_CRIT, "TIME FINISHED: %6.2fsec", start_system_time);
 	closelog();
 
 	return 0;

@@ -1,14 +1,12 @@
 /************************************************************************
- * Contents: This file contains the thread functions of observer 
+ * Contents: This file contains test for the amp_system.h file
  *
  * Author: Dawid Blom
  *
  * Date: 14/04/2022
  *
- * NOTE: All the services in this file is contained in the file 
- * 	 services.h. This file should handle all the necessary
- * 	 functionality for the real-time services when it comes
- * 	 to threading.
+ * NOTE: This is the test file for all the amp_system functions
+ * 	 that will be used in order to create amp threads etc.
  ************************************************************************/
 
 #ifndef _AMP_SYSTEM_H
@@ -22,12 +20,10 @@
 
 #include <pthread.h>
 
-#include "services.h"
+#include "services_test.h"
 
 
-// Members.
-
-#define thread_num 5
+static const int thread_num = 5;
 
 struct amp_members
 {
@@ -46,7 +42,8 @@ struct amp_members amp_member;
 
 
 
-// Function Intefaces.
+
+
 
 bool amp_system_init(int policy, int priority);
 
@@ -61,19 +58,8 @@ bool amp_thread_join();
 
 
 
-
-
-
-
-
 /**
- * By calling this function, it should
- * initialize the the members inside 
- * the struct amp_members with a policy 
- * and priority.
- *
- * Finally, this function returns false 
- * uppon failure and true uppon success. 
+ * This is the test function for the amp_system_init.
  **/
 bool amp_system_init(int policy, int priority)
 {
@@ -96,29 +82,8 @@ bool amp_system_init(int policy, int priority)
 
 
 
-
-
-
-
-
-
-
-
-
 /**
- * By calling this function, it should
- * setup the service threads with all
- * their attributes as well as assign
- * affinity so that each service will
- * run on a specified CPU core.
- *
- * All even number services will run
- * on CPU core 2 and all odd numbered
- * services will run on CPU core 1.
- *
- * Finally, this function returns false
- * uppon failure to setup the threads
- * and true uppon success.
+ * This is the test function for the amp_thread_setup.
  **/
 bool amp_thread_setup()
 {
@@ -128,7 +93,6 @@ bool amp_thread_setup()
 	{
 		CPU_ZERO(&cpu);
 		if ((i % 2) == 0)
-			
 			CPU_SET(2, &cpu);
 		else
 			CPU_SET(1, &cpu);
@@ -137,35 +101,35 @@ bool amp_thread_setup()
 		rc = pthread_attr_init(&amp_member.thread_attr[i]);
 		if (rc != 0)
 		{
-			perror("pthread attribute init");
+			perror("Pthread Attribute Init: ");
 			return false;
 		}
 
 		rc = pthread_attr_setinheritsched(&amp_member.thread_attr[i], PTHREAD_EXPLICIT_SCHED);
 		if (rc != 0)
 		{
-			perror("pthread attribute setinheritsched");
+			perror("Pthread Attribute Setinheritsched: ");
 			return false;
 		}
 
 		rc = pthread_attr_setschedpolicy(&amp_member.thread_attr[i], amp_member.policy);
 		if (rc != 0)
 		{
-			perror("pthread attribute setschedpolicy");
+			perror("Pthread Attribute Setschedpolicy: ");
 			return false;
 		}
 
 		rc = pthread_attr_setschedparam(&amp_member.thread_attr[i], &amp_member.thread_priority[i]);
 		if (rc != 0)
 		{
-			perror("pthread attribute setschedparam");
+			perror("Pthread Attribute Setschedparam: ");
 			return false;
 		}
 
 		rc = pthread_attr_setaffinity_np(&amp_member.thread_attr[i], sizeof(cpu_set_t), &cpu);
 		if (rc != 0)
 		{
-			perror("pthread attribute setaffinity");
+			perror("Pthread Attribute Setaffinity: ");
 			return false;
 		}
 	}
@@ -184,53 +148,43 @@ bool amp_thread_setup()
 
 
 
-
-
-
-
 /**
- * By calling this function, it should
- * create the threads for all the services
- * based on the attributes that was used
- * in the amp_thread_setup function.
- *
- * Finally, this function returns false
- * uppon failure and true uppon success.
+ * Test to create the threads.
  **/
 bool amp_thread_create()
 {
-	int rc = pthread_create(&amp_member.threads[0], &amp_member.thread_attr[0], service1, NULL);
+	int rc = pthread_create(&amp_member.threads[0], &amp_member.thread_attr[0], service1,NULL);
 	if (rc != 0)
 	{
-		perror("thread creation for service 1");
+		perror("Thread Creation For Service 1: ");
 		return false;
 	}
 
 	rc = pthread_create(&amp_member.threads[1], &amp_member.thread_attr[1], service2, NULL);
 	if (rc != 0)
 	{
-		perror("thread creation for service 2");
+		perror("Thread Creation For Service 2: ");
 		return false;
 	}
 
 	rc = pthread_create(&amp_member.threads[2], &amp_member.thread_attr[2], service3, NULL);
 	if (rc != 0)
 	{
-		perror("thread creation for service 3");
+		perror("Thread Creation For Service 3: ");
 		return false;
 	}
 
 	rc = pthread_create(&amp_member.threads[3], &amp_member.thread_attr[3], service4, NULL);
 	if (rc != 0)
 	{
-		perror("thread creation for service 4");
+		perror("Thread Creation For Service 4: ");
 		return false;
 	}
 
 	rc = pthread_create(&amp_member.threads[4], &amp_member.thread_attr[4], service5, NULL);
 	if (rc != 0)
 	{
-		perror("thread creation for service 5");
+		perror("Thread Creation For Service 5: ");
 		return false;
 	}
 
@@ -245,21 +199,8 @@ bool amp_thread_create()
 
 
 
-
-
-
-
-
-
-
 /**
- * By calling this function, it should
- * join all the threads that were created 
- * for this system.
- *
- * Finally, this function always returns 
- * true, however, it should display whether
- * or not the thread has been joined.
+ * Test to see if the threads are able to join successfully. 
  **/
 bool amp_thread_join()
 {
@@ -268,9 +209,9 @@ bool amp_thread_join()
 	{
 		rc = pthread_join(amp_member.threads[i], NULL);
 		if (rc < 0)
-			perror("thread join");
+			perror("Thread Join: ");
 		else
-			perror("thread join");
+			perror("Thread Join: ");
 	}
 
 	return true;

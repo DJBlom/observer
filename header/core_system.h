@@ -5,7 +5,7 @@
  *
  * Date: 12/04/2022
  *
- * NOTE: This is the core system, which will setup the Linux kernel
+ * NOTE: This is the  system, which will setup the Linux kernel
  * 	 to run according to FIFO so that we can use RMA in order to
  * 	 properly determine the outcome.
  *************************************************************************/
@@ -15,8 +15,8 @@
 
 
 
-#ifndef _CORE_SYSTEM_H
-#define _CORE_SYSTEM_H
+#ifndef __SYSTEM_H
+#define __SYSTEM_H
 
 #include <sched.h>
 
@@ -26,7 +26,7 @@
 
 
 
-struct system_members
+struct core_members
 {
 	int 			policy;
 
@@ -35,7 +35,9 @@ struct system_members
 	pid_t 			pid;
 };
 
-struct system_members member;
+struct core_members core_member;
+
+
 
 bool system_init(int policy, int priority, pid_t pid);
 
@@ -51,7 +53,7 @@ double system_real_time();
 
 /**
  * By calling this function, it should
- * initialize the core system and enable
+ * initialize the  system and enable
  * it to set itself up in order for the
  * system to run correctly.
  *
@@ -59,13 +61,16 @@ double system_real_time();
  * will run at, the priority the system
  * should run at, and the main processes
  * process identification.
+ *
+ * Returns true uppon successul initialization
+ * and false uppon failure.
  **/
 bool system_init(int policy, int priority, pid_t pid)
 {
 	{
-		member.policy 				= policy;
-		member.priority.sched_priority		= priority;
-		member.pid				= pid;
+		core_member.policy 			= policy;
+		core_member.priority.sched_priority	= priority;
+		core_member.pid				= pid;
 
 		return true;
 	}
@@ -102,7 +107,7 @@ bool system_init(int policy, int priority, pid_t pid)
  **/
 bool system_setup()
 {
-	int rc = sched_setscheduler(member.pid, member.policy, &member.priority);
+	int rc = sched_setscheduler(core_member.pid, core_member.policy, &core_member.priority);
 	if (rc != 0)
 	{
 		perror("Usage: sudo ./[name of executable binary]");
@@ -110,20 +115,20 @@ bool system_setup()
 	}
 
 	
-	int policy = sched_getscheduler(member.pid);
+	int policy = sched_getscheduler(core_member.pid);
 	switch (policy)
 	{
 		case SCHED_FIFO:
-			printf("Kernel Scheduler Set To: SCHED_FIFO\n");
+			printf("kernel scheduler set so: SCHED_FIFO\n");
 			break;
 		case SCHED_OTHER:
-			printf("Kernel Scheduler Set To: SCHED_OTHER\n");
+			printf("kernel scheduler set to: SCHED_OTHER\n");
 			break;
 		case SCHED_RR:
-			printf("Kernel Scheduler Set To: SCHED_RR\n");
+			printf("kernel scheduler set to: SCHED_RR\n");
 			break;
 		default: 
-			printf("Kernel Scheduler Set To: UNKNOWN.\n");
+			printf("kernel scheduler set to: UNKNOWN\n");
 	}
 
 	return true;
@@ -153,7 +158,7 @@ double system_real_time()
 	int rc = clock_gettime(CLOCK_MONOTONIC_RAW, &time);
 	if (rc != 0)
 	{
-		perror("Failed to get system_time: ");
+		perror("failed to get system_time");
 		exit(1);
 	}
 
