@@ -23,7 +23,7 @@
 #include "services_test.h"
 
 
-static const int thread_num = 5;
+#define thread_num 5
 
 struct amp_members
 {
