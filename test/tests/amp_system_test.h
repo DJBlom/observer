@@ -23,7 +23,7 @@
 #include "services_test.h"
 
 
-#define thread_num 5
+
 
 struct amp_members
 {
@@ -31,17 +31,14 @@ struct amp_members
 
 	int 			priority;
 
-	struct sched_param 	thread_priority[thread_num];
+	struct sched_param 	thread_priority[SIZE];
 
-	pthread_attr_t 		thread_attr[thread_num];
+	pthread_attr_t 		thread_attr[SIZE];
 
-	pthread_t 		threads[thread_num];
+	pthread_t 		threads[SIZE];
 };
 
 struct amp_members amp_member;
-
-
-
 
 
 
@@ -63,18 +60,14 @@ bool amp_thread_join();
  **/
 bool amp_system_init(int policy, int priority)
 {
+	amp_member.policy	= policy;
+	amp_member.priority	= priority;
+	for (int i = 0; i < SIZE; i++)
 	{
-		amp_member.policy	= policy;
-		amp_member.priority	= priority;
-		for (int i = 0; i < thread_num; i++)
-		{
-			amp_member.thread_priority[i].sched_priority = priority - i;
-		}
-	
-		return true;
+		amp_member.thread_priority[i].sched_priority = priority - i;
 	}
 
-	return false;
+	return true;
 }
 
 
@@ -89,7 +82,7 @@ bool amp_thread_setup()
 {
 	int rc;
 	cpu_set_t cpu;
-	for (int i = 0; i < thread_num; i++)
+	for (int i = 0; i < SIZE; i++)
 	{
 		CPU_ZERO(&cpu);
 		if ((i % 2) == 0)
@@ -205,7 +198,7 @@ bool amp_thread_create()
 bool amp_thread_join()
 {
 	int rc;
-	for (int i = 0; i < thread_num; i++)
+	for (int i = 0; i < SIZE; i++)
 	{
 		rc = pthread_join(amp_member.threads[i], NULL);
 		if (rc < 0)

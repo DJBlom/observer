@@ -25,28 +25,22 @@
 #include "services.h"
 
 
-// Members.
-
-#define thread_num 5
-
 struct amp_members
 {
 	int 			policy;
 
 	int 			priority;
 
-	struct sched_param 	thread_priority[thread_num];
+	struct sched_param 	thread_priority[SIZE];
 
-	pthread_attr_t 		thread_attr[thread_num];
+	pthread_attr_t 		thread_attr[SIZE];
 
-	pthread_t 		threads[thread_num];
+	pthread_t 		threads[SIZE];
 };
 
 struct amp_members amp_member;
 
 
-
-// Function Intefaces.
 
 bool amp_system_init(int policy, int priority);
 
@@ -77,23 +71,15 @@ bool amp_thread_join();
  **/
 bool amp_system_init(int policy, int priority)
 {
+	amp_member.policy	= policy;
+	amp_member.priority	= priority;
+	for (int i = 0; i < SIZE; i++)
 	{
-		amp_member.policy	= policy;
-		amp_member.priority	= priority;
-		for (int i = 0; i < thread_num; i++)
-		{
-			amp_member.thread_priority[i].sched_priority = priority - i;
-		}
-	
-		return true;
+		amp_member.thread_priority[i].sched_priority = priority - i;
 	}
 
-	return false;
+	return true;
 }
-
-
-
-
 
 
 
@@ -124,12 +110,13 @@ bool amp_thread_setup()
 {
 	int rc;
 	cpu_set_t cpu;
-	for (int i = 0; i < thread_num; i++)
+	for (int i = 0; i < SIZE; i++)
 	{
 		CPU_ZERO(&cpu);
-		if ((i % 2) == 0)
-			
+		if (((i + 1) % 2) == 0)
 			CPU_SET(2, &cpu);
+		else if (((i + 1) % 5) == 0)
+			CPU_SET(3, &cpu);
 		else
 			CPU_SET(1, &cpu);
 
@@ -137,45 +124,41 @@ bool amp_thread_setup()
 		rc = pthread_attr_init(&amp_member.thread_attr[i]);
 		if (rc != 0)
 		{
-			perror("pthread attribute init");
+			perror("Pthread Attribute Init: ");
 			return false;
 		}
 
 		rc = pthread_attr_setinheritsched(&amp_member.thread_attr[i], PTHREAD_EXPLICIT_SCHED);
 		if (rc != 0)
 		{
-			perror("pthread attribute setinheritsched");
+			perror("Pthread Attribute Setinheritsched: ");
 			return false;
 		}
 
 		rc = pthread_attr_setschedpolicy(&amp_member.thread_attr[i], amp_member.policy);
 		if (rc != 0)
 		{
-			perror("pthread attribute setschedpolicy");
+			perror("Pthread Attribute Setschedpolicy: ");
 			return false;
 		}
 
 		rc = pthread_attr_setschedparam(&amp_member.thread_attr[i], &amp_member.thread_priority[i]);
 		if (rc != 0)
 		{
-			perror("pthread attribute setschedparam");
+			perror("Pthread Attribute Setschedparam: ");
 			return false;
 		}
 
 		rc = pthread_attr_setaffinity_np(&amp_member.thread_attr[i], sizeof(cpu_set_t), &cpu);
 		if (rc != 0)
 		{
-			perror("pthread attribute setaffinity");
+			perror("Pthread Attribute Setaffinity: ");
 			return false;
 		}
 	}
-	
 
 	return true;
 }
-
-
-
 
 
 
@@ -199,48 +182,43 @@ bool amp_thread_setup()
  **/
 bool amp_thread_create()
 {
-	int rc = pthread_create(&amp_member.threads[0], &amp_member.thread_attr[0], service1, NULL);
+	int rc = pthread_create(&amp_member.threads[0], &amp_member.thread_attr[0], service1,NULL);
 	if (rc != 0)
 	{
-		perror("thread creation for service 1");
+		perror("Thread Creation For Service 1: ");
 		return false;
 	}
 
 	rc = pthread_create(&amp_member.threads[1], &amp_member.thread_attr[1], service2, NULL);
 	if (rc != 0)
 	{
-		perror("thread creation for service 2");
+		perror("Thread Creation For Service 2: ");
 		return false;
 	}
 
 	rc = pthread_create(&amp_member.threads[2], &amp_member.thread_attr[2], service3, NULL);
 	if (rc != 0)
 	{
-		perror("thread creation for service 3");
+		perror("Thread Creation For Service 3: ");
 		return false;
 	}
 
 	rc = pthread_create(&amp_member.threads[3], &amp_member.thread_attr[3], service4, NULL);
 	if (rc != 0)
 	{
-		perror("thread creation for service 4");
+		perror("Thread Creation For Service 4: ");
 		return false;
 	}
 
 	rc = pthread_create(&amp_member.threads[4], &amp_member.thread_attr[4], service5, NULL);
 	if (rc != 0)
 	{
-		perror("thread creation for service 5");
+		perror("Thread Creation For Service 5: ");
 		return false;
 	}
 
-
-
 	return true;
 }
-
-
-
 
 
 
@@ -264,14 +242,15 @@ bool amp_thread_create()
 bool amp_thread_join()
 {
 	int rc;
-	for (int i = 0; i < thread_num; i++)
+	for (int i = 0; i < SIZE; i++)
 	{
 		rc = pthread_join(amp_member.threads[i], NULL);
 		if (rc < 0)
-			perror("thread join");
+			perror("Thread Join: ");
 		else
-			perror("thread join");
+			perror("Thread Join: ");
 	}
 
+	printf("Joined the threads.\n");
 	return true;
 }

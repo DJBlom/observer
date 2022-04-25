@@ -21,7 +21,7 @@
 
 # Project Paths.
 SRC_DIR := src
-OBJ_DIR := build
+OBJ_DIR := objects
 BIN_DIR := debug
 
 
@@ -36,8 +36,8 @@ OBJ := $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
 # Compilation Instructions.
 CC 		:= gcc -std=c1x
 CPPFLAGS 	:= -Iheader -MMD -MP
-CFLAGS 		:= -g -O0 -Wall -Werror 
-LDLIBS 		:= -lpthread -lrt
+CFLAGS 	:= -g -O0 -Wall -Werror 
+LDLIBS 	:= -lpthread -lrt
 
 
 

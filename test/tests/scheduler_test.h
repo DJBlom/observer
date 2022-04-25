@@ -5,22 +5,24 @@
 
 #include <time.h>
 
+#include "core_system.h"
+
+#include "services.h"
+
 
 
 struct scheduler_members
 {
-	long frame_count;
 	int count;
 	bool abort_system;
 	struct sigaction action;
 	timer_t timer;
-	struct itimerspec start_time;
+	struct itimerspec start_time{{1,0}, {1,0}};
 	struct itimerspec last_time;
 };
 struct scheduler_members sched_member;
 
-
-bool scheduler_init(long frame_count, int sec, long nsec);
+bool scheduler_init(int sec, long nsec);
 
 void scheduler(int sigint);
 
@@ -33,22 +35,11 @@ void scheduler(int sigint);
 
 
 
-
-
 /**
- * By calling this function, it should 
- * initialize the scheduler by arming 
- * the interval timer and setting up 
- * the signal that will trigger it.
- *
- * NOTE: This function will return false
- * 	 upon failure, and true upon 
- * 	 success.
+ * sheduler initialization function test. 
  */
-bool scheduler_init(long frame_count, int sec, long nsec)
+bool scheduler_init(int sec, long nsec)
 {
-	sched_member.frame_count = frame_count;
-
 	sched_member.count = 0;
 
 	sched_member.abort_system = false;
@@ -75,8 +66,7 @@ bool scheduler_init(long frame_count, int sec, long nsec)
 		perror("signal setup");
 		return false;
 	}
-	
-	
+
 	sched_member.start_time.it_interval.tv_sec 	= sec;
 	sched_member.start_time.it_interval.tv_nsec 	= nsec;
 	sched_member.start_time.it_value.tv_sec 	= sec;
@@ -101,15 +91,11 @@ bool scheduler_init(long frame_count, int sec, long nsec)
 
 
 /**
- * This function represents the scheduler, 
- * which will be in charge of the real-time 
- * service scheduling. Upon system abort, 
- * it will disarm the interval timer and 
- * free all the semaphores.
+ *
  */
 void scheduler(int sigint)
 {
-	if (sched_member.abort_system || sched_member.count == sched_member.frame_count)
+	if (sched_member.abort_system)
 	{
 		sched_member.start_time.it_interval.tv_sec 	= 0;
 		sched_member.start_time.it_interval.tv_nsec 	= 0;
@@ -128,18 +114,18 @@ void scheduler(int sigint)
 
 	sched_member.count++;
 
-	if ((sched_member.count % 100) == 0)
-		sem_post(&core_member.sem_s[0]);
-
-	if ((sched_member.count % 20) == 0)
-		sem_post(&core_member.sem_s[1]);
-
-	if ((sched_member.count % 10) == 0)
-		sem_post(&core_member.sem_s[2]);
+	if ((sched_member.count % 2) == 0)
+		sem_post(&core_member.sem_s[4]);
 
 	if ((sched_member.count % 5) == 0)
 		sem_post(&core_member.sem_s[3]);
 
-	if ((sched_member.count % 50) == 0)
-		sem_post(&core_member.sem_s[4]);
+	if ((sched_member.count % 10) == 0)
+		sem_post(&core_member.sem_s[2]);
+
+	if ((sched_member.count % 20) == 0)
+		sem_post(&core_member.sem_s[1]);
+
+	if ((sched_member.count % 100) == 0)
+		sem_post(&core_member.sem_s[0]);
 }

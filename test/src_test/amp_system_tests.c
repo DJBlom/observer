@@ -33,7 +33,7 @@ TEST_GROUP(amp_system)
 
 
 // Amp system initialization test.
-TEST(amp_system, system_init)
+TEST(amp_system, amp_system_init)
 {
 	int priority = sched_get_priority_max(SCHED_FIFO);
 

@@ -24,26 +24,35 @@
 
 #include <time.h>
 
+#include <semaphore.h>
+
+
+
+#define SIZE 5
 
 
 struct core_members
 {
 	int 			policy;
 
+	double			start_time;
+
 	struct sched_param 	priority;
 
 	pid_t 			pid;
-};
 
+	sem_t			sem_s[SIZE];
+};
 struct core_members core_member;
 
 
+bool core_system_init(int policy, int priority, double start_time, pid_t pid);
 
-bool system_init(int policy, int priority, pid_t pid);
+bool core_system_setup();
 
-bool system_setup();
+void core_system_cleanup();
 
-double system_real_time();
+double core_system_real_time();
 
 #endif
 
@@ -65,20 +74,49 @@ double system_real_time();
  * Returns true uppon successul initialization
  * and false uppon failure.
  **/
-bool system_init(int policy, int priority, pid_t pid)
+bool core_system_init(int policy, int priority, double start_time, pid_t pid)
 {
-	{
-		core_member.policy 			= policy;
-		core_member.priority.sched_priority	= priority;
-		core_member.pid				= pid;
+	core_member.policy 			= policy;
+	core_member.start_time			= start_time;
+	core_member.priority.sched_priority	= priority;
+	core_member.pid				= pid;
 
-		return true;
+	for (int i = 0; i < SIZE; i++)
+	{
+		if (sem_init(&core_member.sem_s[i], 0, 0) != 0)
+		{
+			perror("services semaphore initialization");
+			return false;
+		}
 	}
-	
-	return false;
+
+	return true;
 }
 
 
+
+
+
+
+
+
+
+/**
+ * By calling this function, it should
+ * destroy all the semaphores used in 
+ * the system. Thereby, clean up the 
+ * core system code.
+ */
+void core_system_cleanup()
+{
+	for (int i = 0; i < SIZE; i++)
+	{
+		if (sem_destroy(&core_member.sem_s[i]) != 0)
+			perror("semaphore destroyed");
+		else
+			perror("semaphore destroyed");
+	}
+}
 
 
 
@@ -105,7 +143,7 @@ bool system_init(int policy, int priority, pid_t pid)
  * or return false when we failed to set 
  * the Linux Kernel scheduler.
  **/
-bool system_setup()
+bool core_system_setup()
 {
 	int rc = sched_setscheduler(core_member.pid, core_member.policy, &core_member.priority);
 	if (rc != 0)
@@ -119,7 +157,7 @@ bool system_setup()
 	switch (policy)
 	{
 		case SCHED_FIFO:
-			printf("kernel scheduler set so: SCHED_FIFO\n");
+			printf("kernel scheduler set to: SCHED_FIFO\n");
 			break;
 		case SCHED_OTHER:
 			printf("kernel scheduler set to: SCHED_OTHER\n");
@@ -152,7 +190,7 @@ bool system_setup()
  * system. Converting nano-seconds to
  * seconds.
  **/
-double system_real_time()
+double core_system_real_time()
 {
 	struct timespec time;
 	int rc = clock_gettime(CLOCK_MONOTONIC_RAW, &time);

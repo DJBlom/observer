@@ -16,16 +16,22 @@
 
 # Project Paths.
 SRC_DIR := src_test
-OBJ_DIR := build_test
+OBJ_DIR := objects_test
 BIN_DIR := test
+
+
+# File Extensions
+SRCEXT 	:= .c
+OBJEXT 	:= .o
+
 
 
 
 # Final executable.
 EXE := $(BIN_DIR)/test
-SRC := $(wildcard $(SRC_DIR)/*.c)
-OBJ := $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC)) 
-
+SRC := $(wildcard $(SRC_DIR)/*$(SRCEXT))
+OBJ := $(patsubst $(SRC_DIR)/%$(SRCEXT), $(OBJ_DIR)/%$(OBJEXT), $(SRC)) 
+DEB := $(OBJ:.o=.d)
 
 
 # Compilation Instructions.
@@ -53,7 +59,7 @@ $(EXE): $(OBJ) | $(BIN_DIR)
 	$(CC) $^ $(LDLIBS) -o $@ $(LD_LIBRARIES)
 
 # Compiling phase.
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%$(SRCEXT) | $(OBJ_DIR)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
 # Creating the directories required for comilation.
@@ -66,4 +72,4 @@ clean:
 	rm -rf $(OBJ_DIR)
 
 # Automatic dependency generation for the header files.
--include $(OBJ:.o=.d)
+-include $(DEB)
